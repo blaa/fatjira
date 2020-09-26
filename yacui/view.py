@@ -19,7 +19,16 @@ class View:
         self.app = app
 
     def tick(self):
-        self.app.console.print("View tick")
+        """
+        Called periodically when the view is active.
+        """
+        pass
+
+    def keypress(self, key):
+        """
+        Called when key is pressed that is not mapped into an action.
+        """
+        pass
 
     def redraw(self, wnd: _curses.window):
         raise NotImplementedError

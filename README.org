@@ -97,9 +97,12 @@ App ----> Console
   This renders bad on Github. Use org-mode/emacs or ignore this part.
 
 ** TODO Basics 2/2
-*** TODO Display bindings with common offset
-*** TODO Handle bindings with C-, M- prefix and <enter>
-*** TODO Pass unhandled keybindings to the view.
+*** DONE Display bindings with common offset
+    CLOSED: [2020-09-26 Sat 17:08]
+*** DONE Handle bindings with C-, M- prefix and <enter>
+    CLOSED: [2020-09-26 Sat 17:08]
+*** DONE Pass unhandled keybindings to the view.
+    CLOSED: [2020-09-26 Sat 17:08]
 *** TODO Allow view to instantiate the subview before navigating
 *** TODO Resize works.
     - Note taken on [2020-09-22 Tue 01:17] \\

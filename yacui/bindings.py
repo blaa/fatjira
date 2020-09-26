@@ -9,9 +9,9 @@ Entry = namedtuple('Entry', ['key', 'desc', 'action'])
 
 class _State:
     def __init__(self):
-        # {'k' -> action_to_call(), ...} - for lookup
+        # {'k': action_to_call(), "C-F": action(), ...} - for lookup
         self.keymap = {}
-        # [ ('k', action) ] - for display, in order
+        # [ entry1, entry2 ] - for display, in order.
         self.commands = []
         # ["Type to search", "See manual page 34", ...]
         self.hints = []
@@ -59,8 +59,10 @@ class Bindings:
     def call(self, key):
         """
         Find connected action and run it.
+        Returns:
+          True if action was found and executed, False otherwise.
         """
-        self.state.call(key)
+        return self.state.call(key)
 
     def push(self):
         "Push current keybindings away and create clean state"

@@ -72,3 +72,10 @@ class Display:
         """
         if self.view_current:
             self.view_current.tick()
+
+    def keypress(self, key):
+        """
+        Executed when a pressed key does not map into an action.
+        """
+        if self.view_current:
+            self.view_current.keypress(key)

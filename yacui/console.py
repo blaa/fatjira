@@ -68,12 +68,39 @@ class Console:
         # TODO: Message at bottom with a minimal time and auto clearing.
         self.stdscr.addstr(message + endl)
 
-    def get_key(self):
-        try:
-            key = self.wnd_view.getkey()
+    def _decode_ctrl(self, key):
+        """
+        Convert control codes ("\x01" - "\x1A") into ascii representation C-x
+        """
+        assert len(key) == 1
+        if key == '\n':
+            return 'RET'
+        code = ord(key)
+        if not 0 < code <= 0x1A:
+            # Not control code
             return key
+        letter = code + ord('a') - 1
+        return "C-" + chr(letter)
+
+    def get_key(self):
+        """Read key with half-delay and decode Control and Meta keys"""
+        ESC = '\x1b'
+        try:
+            key = self._decode_ctrl(self.wnd_view.get_wch())
         except curses.error:
             return None
+
+        if key != ESC:
+            return key
+
+        # Decode escape
+        try:
+            key = self._decode_ctrl(self.wnd_view.get_wch())
+            return ("M-" + key).replace('M-C-', 'C-M-')
+        except curses.error:
+            # Just escape
+            return "ESC"
+
 
     def resize(self, a, b):
         "Handle SIGWINCH signal which happens on terminal resize"
