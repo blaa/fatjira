@@ -13,6 +13,8 @@ class _State:
         self.keymap = {}
         # [ ('k', action) ] - for display, in order
         self.commands = []
+        # ["Type to search", "See manual page 34", ...]
+        self.hints = []
 
     def register(self, entry):
         "Register action with given keys"
@@ -21,6 +23,10 @@ class _State:
 
         self.commands.append(entry)
         self.keymap[entry.key] = entry.action
+
+    def add_hint(self, hint):
+        "Register a hint for a user"
+        self.hints.append(hint)
 
     def call(self, key):
         action = self.keymap.get(key)
@@ -47,6 +53,9 @@ class Bindings:
         entry = Entry(key, desc, action)
         self.state.register(entry)
 
+    def add_hint(self, hint):
+        self.state.add_hint(hint)
+
     def call(self, key):
         """
         Find connected action and run it.
@@ -64,4 +73,4 @@ class Bindings:
         self.state = self.state_stack.pop()
 
     def get_current(self):
-        return self.state.commands
+        return self.state

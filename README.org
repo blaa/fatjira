@@ -95,6 +95,19 @@ App ----> Console
    state (db connections, etc.) can be stored in the App instance.
 * Project management.
   This renders bad on Github. Use org-mode/emacs or ignore this part.
+
+** TODO Basics 2/2
+*** TODO Display bindings with common offset
+*** TODO Handle bindings with C-, M- prefix and <enter>
+*** TODO Pass unhandled keybindings to the view.
+*** TODO Allow view to instantiate the subview before navigating
+*** TODO Resize works.
+    - Note taken on [2020-09-22 Tue 01:17] \\
+      Partially. Via getkey not really, via SIGWINCH mostly YES, but the number of
+      cols is not refreshed everywhere.
+
+*** TODO Executing an external editor for advanced edits.
+*** TODO Non-blocking input method for incremental search.
 ** DONE [7/7] Implement a runnable core to build on.
    CLOSED: [2020-09-22 Tue 21:20]
 *** DONE View initialization
@@ -116,14 +129,6 @@ App ----> Console
     CLOSED: [2020-09-22 Tue 01:16]
 ** DONE Display keybindings discovery
    CLOSED: [2020-09-22 Tue 01:16]
-** TODO Basics 2/2
-*** TODO Resize works.
-    - Note taken on [2020-09-22 Tue 01:17] \\
-      Partially. Via getkey not really, via SIGWINCH mostly YES, but the number of
-      cols is not refreshed everywhere.
-
-*** TODO Executing an external editor for advanced edits.
-*** TODO Non-blocking input method for incremental search.
 ** TODO Package this as a library
 ** TODO Add unit tests for core mechanisms.
    - Mock console

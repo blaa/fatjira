@@ -15,6 +15,7 @@ class Default:
         c = self.color
         self.DISCOVERY_KEY = c("yellow", curses.A_BOLD)
         self.DISCOVERY_DESC = c("white", curses.A_BOLD)
+        self.DISCOVERY_HINT = c("white")
 
     def init_colors(self):
         "Initialize all colors"

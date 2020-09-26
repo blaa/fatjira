@@ -11,32 +11,63 @@ class Discovery:
     def __init__(self, app):
         self.app = app
 
-    def redraw_keys(self, wnd, line_start, line_end, col_start, margin):
-        cmds = self.app.bindings.get_current()
-        theme = self.app.theme
+        # Const or recalculated from window size parameters
+        self.margin_column = 10
+        self.margin_left = 3
+        self.margin_top = 1
+        self.lines_max = None
+        self.cols_max = None
 
-        col = col_start
-        line = line_start
-        max_chars = 0
-        for cmd in cmds:
-            if line == line_end:
-                line = line_start
-                col += max_chars + margin
-                max_chars = 0
-            max_chars = max(max_chars, len(cmd.desc) + 2)
+    def _draw_column(self, wnd, col, cmds):
+        "Draw single column"
+        theme = self.app.theme
+        line = self.margin_top
+        entries = self.lines_max - line
+        cmds_in_column = cmds[0:entries]
+        max_width = 0
+
+        max_key = max(len(cmd.key) for cmd in cmds_in_column)
+
+        for cmd in cmds_in_column:
             wnd.addstr(line, col, cmd.key, theme.DISCOVERY_KEY)
-            wnd.addstr(line, col + 2, cmd.desc, theme.DISCOVERY_DESC)
+            wnd.addstr(line, col + max_key + 1, cmd.desc, theme.DISCOVERY_DESC)
             line += 1
+            max_width = max(max_width, len(cmd.desc) + max_key + 1)
+
+        return cmds[entries:], max_width
+
+    def _draw_hints(self, wnd, col, hints):
+        "Draw hints for a user"
+        theme = self.app.theme
+        line = self.margin_top
+        entries = self.lines_max - line
+        hints_in_column = hints[0:entries]
+        max_width = 0
+
+        for hint in hints_in_column:
+            wnd.addstr(line, col, hint, theme.DISCOVERY_HINT)
+            line += 1
+            max_width = max(max_width, len(hint))
+        return hints[entries:], max_width
 
     def redraw(self, wnd: _curses.window):
         "Refresh status and keybindings display"
-        # Parameters
-        line_start = 1
-        margin = 10
-        col_start = 3
-
-        lines, cols = wnd.getmaxyx()
+        # Update size on resize events
+        self.lines_max, self.cols_max = wnd.getmaxyx()
         wnd.clear()
-        wnd.hline(0, 0, curses.ACS_HLINE, cols)
-        self.redraw_keys(wnd, line_start, lines, col_start, margin)
+        wnd.hline(0, 0, curses.ACS_HLINE, self.cols_max)
+
+        cmds = self.app.bindings.get_current().commands[:]
+
+        col = self.margin_left
+
+        while cmds:
+            cmds, max_width = self._draw_column(wnd, col, cmds)
+            col += max_width + self.margin_column
+
+        hints = self.app.bindings.get_current().hints[:]
+        while hints:
+            hints, max_width = self._draw_hints(wnd, col, hints)
+            col += max_width + self.margin_column
+
         wnd.refresh()
