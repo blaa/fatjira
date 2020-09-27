@@ -65,10 +65,11 @@ class HomeView(CommonView):
         self.app.bindings.register("c", "Test click", self.action_click)
         self.app.bindings.register("f", "Query string", self.action_read)
         self.app.bindings.register("g", "Query bool", self.action_query_bool)
-        self.app.bindings.register("s", "Secondary VIEW", self.action_navigate)
-        self.app.bindings.register("j", "Action", self.action_click)
-        self.app.bindings.register("k", "More action", self.action_click)
+        self.app.bindings.register(["s", "C-r"], "Secondary VIEW", self.action_navigate)
+        self.app.bindings.register(["j", "F1"], "Action", self.action_click)
+        self.app.bindings.register(["k", "M-k"], "More action", self.action_click)
         self.app.bindings.register("l", "Noisiest of all", self.action_click)
+        self.app.bindings.add_hint("Have fun.")
 
     def on_leave(self):
         self.app.bindings.pop()
@@ -121,6 +122,10 @@ class HomeView(CommonView):
         self.ticks += 1
         if self.ticks % 10 == 0:
             self.app.display.redraw_view()
+
+    def keypress(self, key):
+        self.log_message(f"Unhandled key: {key}")
+        self.app.display.redraw_view()
 
 
 def run():

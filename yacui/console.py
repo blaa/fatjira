@@ -98,7 +98,8 @@ class Console:
         }
         key = mapping.get(code)
         if not key:
-            raise Exception(f"Unable to parse escape code {code}")
+            # FIXME: Multiple presses of M-S-o will fail here.
+            raise Exception(f"Unable to parse escape code '{code}'")
         return key
 
     def _parse_escape_codes(self):
@@ -173,7 +174,7 @@ class Console:
             # Just escape
             return 'ESC'
 
-        if key == "M-O":
+        if key == "M-S-o":
             return self._parse_meta_o()
 
         if key != 'M-[':

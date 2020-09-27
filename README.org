@@ -32,7 +32,7 @@
 * Usage
   Install pipenv and then use it to download dependencies.
   TODO: Package as a library
-  #+begin_src bash  
+  #+begin_src bash
    $ sudo apt install pipenv
    $ pipenv install
    $ pipenv shell
@@ -104,13 +104,28 @@ App ----> Console
 *** DONE Pass unhandled keybindings to the view.
     CLOSED: [2020-09-26 Sat 17:08]
 *** TODO Allow view to instantiate the subview before navigating
+    So it can use subview as a modal, for example action requires selected item,
+    so it opens a subview for selection, but instructs it first what is it
+    looking for and sets callbacks.
 *** TODO Resize works.
     - Note taken on [2020-09-22 Tue 01:17] \\
       Partially. Via getkey not really, via SIGWINCH mostly YES, but the number of
       cols is not refreshed everywhere.
-
+*** TODO Handle escape codes without delays
+    Current half-delay approach will break when someone types M-o twice
+    or ESC twice fast.
+*** TODO A reusable almost advanced internal editor.
+    Either embed readline... or implement it. Can't be too hard.
+    Minimum keys support:
+    movement: C-f, C-b, M-f, M-b, C-a, C-e, C-n, C-p, LEFT, RIGHT
+    edit: M-BACKSPACE, M-d, C-k, BACKSPACE, typing in insert mode
+    C-y (yank previous cut)
+    Maybe: mark (C-Space)
 *** TODO Executing an external editor for advanced edits.
-*** TODO Non-blocking input method for incremental search.
+*** DONE Non-blocking input method for incremental search.
+    Implemented by passing an unhandled keypresses to the view and then in 6
+    lines of code - without full edit though.
+    CLOSED: [2020-09-27 Sun 15:10]
 ** DONE [7/7] Implement a runnable core to build on.
    CLOSED: [2020-09-22 Tue 21:20]
 *** DONE View initialization
