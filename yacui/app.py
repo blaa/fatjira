@@ -1,10 +1,12 @@
 # (C) 2020 by Tomasz bla Fortuna
 # License: MIT
 
+import logging
 import curses
 
 from yacui import Console, Display
 from yacui import Bindings, Discovery
+from yacui import DebugWindow
 from yacui import themes
 
 
@@ -25,6 +27,8 @@ class App:
         self.display = Display(self, self.console)
         self.bindings = Bindings(self)
         self.discovery = Discovery(self)
+        self.debug = DebugWindow(self)
+        self.log = logging.getLogger('yacui')
 
     def loop(self):
         "Main application loop"
