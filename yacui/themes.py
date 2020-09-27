@@ -43,7 +43,6 @@ class Default:
         }
 
     def color(self, name, mod = 0):
-        assert mod in {0, curses.A_BOLD}
         cid = self.color_map.get(name)
         if cid is None:
             raise Exception(f"Unknown color name '{name}'")

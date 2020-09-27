@@ -32,6 +32,12 @@ class Console:
         self.stdscr.keypad(1)
         self._start_windows()
 
+    def set_cursor(self, enabled):
+        if enabled:
+            curses.curs_set(1)
+        else:
+            curses.curs_set(0)
+
     def cleanup(self):
         "'Fix' terminal before quitting"
         curses.nocbreak()
