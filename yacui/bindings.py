@@ -4,7 +4,7 @@
 from collections import namedtuple
 
 
-Entry = namedtuple('Entry', ['key', 'desc', 'action'])
+Entry = namedtuple('Entry', ['keys', 'desc', 'action'])
 
 
 class _State:
@@ -18,11 +18,12 @@ class _State:
 
     def register(self, entry):
         "Register action with given keys"
-        if entry.key in self.keymap:
-            raise Exception(f"Key {entry.key} already is defined")
+        for key in entry.keys:
+            if key in self.keymap:
+                raise Exception(f"Key {key} already is defined")
+            self.keymap[key] = entry.action
 
         self.commands.append(entry)
-        self.keymap[entry.key] = entry.action
 
     def add_hint(self, hint):
         "Register a hint for a user"
@@ -46,11 +47,14 @@ class Bindings:
         self.state_stack = []
         self.state = _State()
 
-    def register(self, key, desc, action):
+    def register(self, keys, desc, action):
         """
         Register action within current state
         """
-        entry = Entry(key, desc, action)
+        if isinstance(keys, str):
+            keys = [keys]
+        assert isinstance(keys, list)
+        entry = Entry(keys, desc, action)
         self.state.register(entry)
 
     def add_hint(self, hint):

@@ -26,10 +26,11 @@ class Discovery:
         cmds_in_column = cmds[0:entries]
         max_width = 0
 
-        max_key = max(len(cmd.key) for cmd in cmds_in_column)
+        max_key = max(len(" ".join(cmd.keys)) for cmd in cmds_in_column)
 
         for cmd in cmds_in_column:
-            wnd.addstr(line, col, cmd.key, theme.DISCOVERY_KEY)
+            keys = " ".join(cmd.keys)
+            wnd.addstr(line, col, keys, theme.DISCOVERY_KEY)
             wnd.addstr(line, col + max_key + 1, cmd.desc, theme.DISCOVERY_DESC)
             line += 1
             max_width = max(max_width, len(cmd.desc) + max_key + 1)
