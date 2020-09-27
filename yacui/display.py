@@ -1,7 +1,7 @@
 # (C) 2020 by Tomasz bla Fortuna
 # License: MIT
 
-from yacui import StopNavigation
+from yacui import View, StopNavigation
 
 
 class Display:
@@ -32,14 +32,22 @@ class Display:
             del dropped
         self.view_history = keep
 
-    def navigate(self, view_cls):
-        "Switch display to new view"
+    def navigate(self, view):
+        """
+        Switch display to a new view.
+
+        Args:
+          view: a class of a view, or a pre-created instance.
+        """
         try:
             self.history_push()
         except StopNavigation:
             return False
 
-        self.view_current = view_cls(self.app)
+        if isinstance(view, View):
+            self.view_current = view
+        else:
+            self.view_current = view(self.app)
         self.view_current.on_enter()
         self.redraw_view()
         return True

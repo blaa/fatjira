@@ -44,7 +44,7 @@ class SecondView(CommonView):
 
     def redraw(self, wnd: _curses.window):
         "Refresh the view display"
-        wnd.clear()
+        wnd.erase()
         wnd.addstr(0, 0, "Secondary view.")
 
     def action_new_home(self):
@@ -77,7 +77,7 @@ class HomeView(CommonView):
     def redraw(self, wnd: _curses.window):
         "Refresh the view display"
         lines, cols = wnd.getmaxyx()
-        wnd.clear()
+        wnd.erase()
 
         line = 0
         wnd.addstr(line, 0, f"View screen ({self.ticks} ticks):")

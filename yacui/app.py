@@ -13,7 +13,7 @@ class App:
     Application backbone, holds current state.
     """
 
-    def __init__(self, home_screen, theme_cls=None):
+    def __init__(self, home_screen, theme_cls=None, debug=False):
         self.home_screen = home_screen
 
         if theme_cls is None:
@@ -21,12 +21,12 @@ class App:
         self.theme_cls = theme_cls
 
         self._stop = False
-        self.console = Console(self._resize_callback)
+        self.console = Console(self._resize_callback, debug)
         self.display = Display(self, self.console)
         self.bindings = Bindings(self)
         self.discovery = Discovery(self)
 
-    def loop(self, debug=False):
+    def loop(self):
         "Main application loop"
         # NOTE: This could be migrated to asyncio with some patchy ncurses
         # getch support.

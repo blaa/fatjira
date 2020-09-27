@@ -55,7 +55,7 @@ class Discovery:
         "Refresh status and keybindings display"
         # Update size on resize events
         self.lines_max, self.cols_max = wnd.getmaxyx()
-        wnd.clear()
+        wnd.erase()
         wnd.hline(0, 0, curses.ACS_HLINE, self.cols_max)
 
         cmds = self.app.bindings.get_current().commands[:]

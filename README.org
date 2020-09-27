@@ -103,10 +103,13 @@ App ----> Console
     CLOSED: [2020-09-26 Sat 17:08]
 *** DONE Pass unhandled keybindings to the view.
     CLOSED: [2020-09-26 Sat 17:08]
-*** TODO Allow view to instantiate the subview before navigating
+*** DONE Allow view to instantiate the subview before navigating
+    CLOSED: [2020-09-27 Sun 22:53]
     So it can use subview as a modal, for example action requires selected item,
     so it opens a subview for selection, but instructs it first what is it
     looking for and sets callbacks.
+*** TODO Logging / debugging
+*** TODO Maybe suggested way of handling futures
 *** TODO Resize works.
     - Note taken on [2020-09-22 Tue 01:17] \\
       Partially. Via getkey not really, via SIGWINCH mostly YES, but the number of
