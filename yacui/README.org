@@ -1,0 +1,156 @@
+* What
+  Yacui is a Magit inspired Console User Interface library. If you haven't used
+  Magit, the tl;dr is:
+  1. Screen is split into two: the current "view" and available key bindings.
+  2. You navigate the interface using a single (or combined) letters.
+
+  Magit interface allows for easy discoverability and low learning curve. Simple
+  mnemonic controls let you build muscle memory and use it fast when you've
+  learned it. We need more software like that.
+
+  "Screenshot" of an imagined cookbook app:
+  #+begin_src
+  Cookbook application
+
+  1. Recipe for cookies
+  2. Recipe for cake *SELECTED*
+
+
+  --------------------------------------
+   q Quit            n Next
+   N Add new recipe  p Previous
+   D Delete recipe   Enter View recipe
+  Status: New recipe added successfully!
+  #+end_src
+
+  I need this in my small internal project, but doing this lib with a nice API
+  was my guilty pleasure. I'd love to have a full Jira interface in console
+  (Majira?) but my attention span is too short to code it.
+
+  Name is bad, but most names are taken.
+
+* Usage
+  Install pipenv and then use it to download dependencies.
+  TODO: Package as a library
+  #+begin_src bash
+   $ sudo apt install pipenv
+   $ pipenv install
+   $ pipenv shell
+   # Run an example:
+   $ ./example.py
+   #+end_src
+   I include this as a subtree in my other projects until it matures.
+* Docs / doodles.
+#+begin_src
+App ----> Console
+    \---> Display  ---> Current View
+     \--> Bindings  \-> View history
+      \-> Discovery
+#+end_src
+
+** App
+   Ties everything together. Can hold additional "global" state required by the
+   app, although most of state should be handled by views.
+
+*** Event loop
+    Reads keys, and uses Bindings to resolve an action. If nothing is happening
+    it's calling a tick on the current view once a second.
+
+    This maaaybe nicer using asyncio, but currently works just fine and is
+    simple.
+
+** Console
+   Manages ncurses; initializes/deinitializes screen.
+   Splits screen in windows, offers a low-level input control.
+
+** Display (current display)
+   Holds the current View instance. Manages backward/forward navigation between
+   view instances.
+
+   Manages views lifecycle by calling their on_enter/on_leave/on_drop methods.
+
+** View / View
+  A View controls what is displayed. Can always redraw the view data on the
+  screen in case of resize event or view navigation.
+
+  It also controls what actions can be executed and what other views can be
+  visited.
+
+** Bindings
+   Converts pressed buttons into executed actions. There's only one instance of
+   Bindings class.
+
+   Current bindings can be pushed/popped from the binding stack.
+
+** Discovery
+   Renders the current bindings in a usable and automatic way while preserving
+   their order.
+
+** Handling of state
+   View can have multiple instances displaying in the same way different data.
+   If necessary can share state via class members or app object. Therefore View
+   instances hold the main app state.
+
+   Display manages screens and doesn't hold additional state information. Global
+   state (db connections, etc.) can be stored in the App instance.
+* Project management.
+  This renders bad on Github. Use org-mode/emacs or ignore this part.
+
+** TODO Basics 2/2
+*** DONE Display bindings with common offset
+    CLOSED: [2020-09-26 Sat 17:08]
+*** DONE Handle bindings with C-, M- prefix and <enter>
+    CLOSED: [2020-09-26 Sat 17:08]
+*** DONE Pass unhandled keybindings to the view.
+    CLOSED: [2020-09-26 Sat 17:08]
+*** DONE Allow view to instantiate the subview before navigating
+    CLOSED: [2020-09-27 Sun 22:53]
+    So it can use subview as a modal, for example action requires selected item,
+    so it opens a subview for selection, but instructs it first what is it
+    looking for and sets callbacks.
+*** TODO Logging / debugging
+*** TODO Maybe suggested way of handling futures
+*** TODO Resize works.
+    - Note taken on [2020-09-22 Tue 01:17] \\
+      Partially. Via getkey not really, via SIGWINCH mostly YES, but the number of
+      cols is not refreshed everywhere.
+*** TODO Handle escape codes without delays
+    Current half-delay approach will break when someone types M-o twice
+    or ESC twice fast.
+*** TODO A reusable almost advanced internal editor.
+    Either embed readline... or implement it. Can't be too hard.
+    Minimum keys support:
+    movement: C-f, C-b, M-f, M-b, C-a, C-e, C-n, C-p, LEFT, RIGHT
+    edit: M-BACKSPACE, M-d, C-k, BACKSPACE, typing in insert mode
+    C-y (yank previous cut)
+    Maybe: mark (C-Space)
+*** TODO Executing an external editor for advanced edits.
+*** DONE Non-blocking input method for incremental search.
+    Implemented by passing an unhandled keypresses to the view and then in 6
+    lines of code - without full edit though.
+    CLOSED: [2020-09-27 Sun 15:10]
+** DONE [7/7] Implement a runnable core to build on.
+   CLOSED: [2020-09-22 Tue 21:20]
+*** DONE View initialization
+    CLOSED: [2020-09-20 Sun 09:49]
+    - Generate PAD
+*** DONE Key bindings working.
+    CLOSED: [2020-09-21 Mon 01:52]
+*** DONE View redraw working.
+    CLOSED: [2020-09-21 Mon 01:52]
+    - PAD displayed on the screen.
+*** DONE Keybindings render working.
+    CLOSED: [2020-09-21 Mon 01:52]
+*** DONE Querying for string
+    CLOSED: [2020-09-22 Tue 01:01]
+    Partially. Embedding readline seems necessary.
+*** DONE Querying for Y/N
+    CLOSED: [2020-09-22 Tue 01:01]
+*** DONE View navigation works with keybindings push/pop
+    CLOSED: [2020-09-22 Tue 01:16]
+** DONE Display keybindings discovery
+   CLOSED: [2020-09-22 Tue 01:16]
+** TODO Package this as a library
+** TODO Add unit tests for core mechanisms.
+   - Mock console
+   - Test View navigation, droping, bindings push/pop

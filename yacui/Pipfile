@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+ipython = "*"
+jira = "*"
+python-dateutil = "*"
+jinja2 = "*"
+
+[dev-packages]
+epc = "*"
+importmagic = "*"
+ipdb = "*"
+
+[requires]
+python_version = "3.8"
