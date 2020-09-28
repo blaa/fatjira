@@ -1,0 +1,23 @@
+#+TITLE: Org-mode project tracking
+
+Github might not render this file correctly.
+
+* DONE PoC
+  CLOSED: [2020-09-29 Tue 00:18]
+** DONE Loading and synchronizing local cache of issues
+   CLOSED: [2020-09-29 Tue 00:13]
+** DONE Interface for incrementally searching the issues.
+* TODO [0/3] v1: Make it usable
+** TODO Cleanup the PoC of incremental search
+** TODO Make the search non-blocking (threads should be just fine)
+** TODO Make the synchronization non-blocking.
+** TODO Add dashboard information
+   - Date of last sync, some stats.
+   - Some current status of open issues, worklogs... maybe jinja template?
+** TODO Issue view with some details and action keys.
+** TODO Synchronizing worklogs along the rest of data.
+** TODO Adding worklogs.
+* TODO [0/2] v2: Ideas.
+** TODO Transitioning issue
+** TODO Creating similar issues using templates.
+* TODO Package so it's pip-installable
