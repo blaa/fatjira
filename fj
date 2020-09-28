@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+import os
+import sys
+
+# Manage python path for development / GIT work.
+PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
+YACUI_DIR = os.path.join(PROJECT_DIR, "yacui")
+sys.path.insert(0, YACUI_DIR)
+
+# Start software
+import yacui
+import fatjira
+
+fatjira.main()

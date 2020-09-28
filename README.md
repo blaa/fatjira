@@ -35,3 +35,9 @@ factors) of local cache takes around 10 minutes, and further daily resync up to
 30 seconds (most time was taken by logging in).
 
 I considered combining it with orgassist project as it scratches a similar itch.
+
+
+Usage
+-----
+
+Currently from the GIT, no install over PIP available

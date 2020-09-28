@@ -7,7 +7,7 @@ Github might not render this file correctly.
 ** DONE Loading and synchronizing local cache of issues
    CLOSED: [2020-09-29 Tue 00:13]
 ** DONE Interface for incrementally searching the issues.
-* TODO [0/3] v1: Make it usable
+* [0/3] v1: Make it usable
 ** TODO Cleanup the PoC of incremental search
 ** TODO Make the search non-blocking (threads should be just fine)
 ** TODO Make the synchronization non-blocking.
@@ -17,7 +17,10 @@ Github might not render this file correctly.
 ** TODO Issue view with some details and action keys.
 ** TODO Synchronizing worklogs along the rest of data.
 ** TODO Adding worklogs.
-* TODO [0/2] v2: Ideas.
+* [0/2] v2: Ideas.
 ** TODO Transitioning issue
 ** TODO Creating similar issues using templates.
+* Bugs?
+** TODO Should each searched term match only the beginning of words?
+** TODO Use \ or "" to combine terms?
 * TODO Package so it's pip-installable
