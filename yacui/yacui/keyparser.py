@@ -103,9 +103,12 @@ def _parse_escape_codes(wnd):
 def _parse_meta_escape(wnd):
     # Decode escape
     try:
-        key = _decode_ctrl(wnd.get_wch())
+        code = wnd.get_wch()
+        key = _decode_ctrl(code)
         if len(key) == 1 and key[0].isupper():
             key = "S-" + key.lower()
+        if code == '\x7f':
+            key = 'BACKSPACE'
         key = ('M-' + key).replace('M-C-', 'C-M-')
     except curses.error:
         # Just escape

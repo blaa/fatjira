@@ -21,7 +21,7 @@ class DebugWindow:
         self._logs = self._logs[-(lines-1):]
         line = 1
         for log in self._logs:
-            wnd.addstr(line, 0, log)
+            wnd.addstr(line, 0, log[:cols-1])
             line += 1
 
         wnd.refresh()
