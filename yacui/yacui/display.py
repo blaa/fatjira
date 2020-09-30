@@ -14,6 +14,9 @@ class Display:
         self.view_current = None
         self.view_history = []
 
+        # Erase status on the next redraw if True.
+        self._status_persistent = False
+
     def history_push(self):
         "Move current view to history"
         if not self.view_current:
@@ -72,6 +75,12 @@ class Display:
         return True
 
     def redraw_view(self):
+        """
+        Idempotently refreshed whole display.
+
+        Executed on each alteration to the view, bindings, etc. Mostly
+        triggered by current view after something happens.
+        """
         self.app.discovery.redraw(self.app.console.wnd_discovery)
         start = time()
         self.view_current.redraw(self.app.console.wnd_view)
@@ -81,6 +90,10 @@ class Display:
 
         if self.app.console.wnd_debug:
             self.app.debug.redraw(self.app.console.wnd_debug)
+
+        if not self._status_persistent:
+            self.app.console.wnd_status.erase()
+            self.app.console.wnd_status.refresh()
 
     def tick(self):
         """
@@ -95,3 +108,11 @@ class Display:
         """
         if self.view_current:
             self.view_current.keypress(key)
+
+    def status(self, message, persistent=False):
+        "Display message on the status line"
+        wnd = self.app.console.wnd_status
+        wnd.erase()
+        wnd.addstr(0, 0, message)
+        wnd.refresh()
+        self._status_persistent = persistent

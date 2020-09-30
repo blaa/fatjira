@@ -99,7 +99,7 @@ class HomeView(CommonView):
 
     def action_click(self):
         self.action_counter += 1
-        self.app.console.status(f"Clicked for the {self.action_counter} times")
+        self.app.display.status(f"Clicked for the {self.action_counter} times")
         message = f"{self.action_counter} click."
         self.log_message(message)
         self.app.display.redraw_view()

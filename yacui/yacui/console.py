@@ -103,12 +103,6 @@ class Console:
         if self.resize_callback:
             self.resize_callback()
 
-    def status(self, message):
-        "Display message on the status line"
-        self.wnd_status.erase()
-        self.wnd_status.addstr(0, 0, message)
-        self.wnd_status.refresh()
-
     def query_string(self, prompt):
         "Query for a string using a textpad"
         # FIXME: Readline would be better
