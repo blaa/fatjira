@@ -1,8 +1,28 @@
 # (C) 2020 by Tomasz bla Fortuna
 # License: MIT
 
+from time import time
 import curses
 import _curses
+
+
+class _Timer:
+    """
+    Time execution and add debug entry
+    """
+
+    def __init__(self, name, debug):
+        self.name = name
+        self.debug = debug
+        self.start = None
+
+    def __enter__(self):
+        self.start = time()
+
+    def __exit__(self, type, value, traceback):
+        took = time() - self.start
+        msg = f"'{self.name}' executed in {took:.2f}"
+        self.debug.log(msg)
 
 
 class DebugWindow:
@@ -29,3 +49,14 @@ class DebugWindow:
     def log(self, message):
         self._logs.append(message)
         self._logs = self._logs[-20:]
+
+    def time(self, name):
+        """
+        Time execution and log result.
+
+        Usage (with --debug):
+
+            with self.app.debug.time("Data update"):
+                self.update()
+        """
+        return _Timer(name, self)

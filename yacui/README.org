@@ -108,7 +108,9 @@ App ----> Console
     So it can use subview as a modal, for example action requires selected item,
     so it opens a subview for selection, but instructs it first what is it
     looking for and sets callbacks.
-*** TODO Logging / debugging
+*** DONE Logging / debugging
+    CLOSED: [2020-09-30 Wed 22:29]
+    Debug window, opened with --debug; helps a bit with development.
 *** TODO Maybe suggested way of handling futures
 *** TODO Resize works.
     - Note taken on [2020-09-22 Tue 01:17] \\
@@ -124,6 +126,9 @@ App ----> Console
     edit: M-BACKSPACE, M-d, C-k, BACKSPACE, typing in insert mode
     C-y (yank previous cut)
     Maybe: mark (C-Space)
+
+    console.textpad after rereading the docs can work without blocking so it might be ok.
+    Although I'm unsure if it's worth using. The keys would have to be wrapped anyway.
 *** TODO Executing an external editor for advanced edits.
 *** DONE Non-blocking input method for incremental search.
     Implemented by passing an unhandled keypresses to the view and then in 6
@@ -154,3 +159,5 @@ App ----> Console
 ** TODO Add unit tests for core mechanisms.
    - Mock console
    - Test View navigation, droping, bindings push/pop
+   - Create mechanism for sending key presses and checking result,
+     to have an api to test applications, not the lib itself.
