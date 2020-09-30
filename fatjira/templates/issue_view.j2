@@ -1,0 +1,7 @@
+<theme=TITLE>Issue:</theme> <theme=ISSUE_KEY>{{ key }}</theme>
+<theme=TITLE>Summary:</theme> {{ issue["summary"] | wrap }}
+<theme=TITLE>Reporter:</theme> {{ issue["reporter"]["name"] if "reporter" in issue else "unknown" }}
+<theme=TITLE>Assignee:</theme> {{ issue["assignee"]["name"] if "assignee" in issue else "unassigned" }}
+
+
+{{ issue["description"] or "No description" }}

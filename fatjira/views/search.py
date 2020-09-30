@@ -2,6 +2,8 @@ import _curses
 
 from yacui import View
 from fatjira import IncrementalSearch
+from fatjira.views import IssueView
+
 
 def extract_issue(issue):
     "Experimental issue extractor"
@@ -35,17 +37,13 @@ class SearchView(View):
         self.results = []
 
         # TEMP
-        issue_keys = [
-            key
-            for key in self.app.issue_cache.shelve.keys()
-            if not key.startswith("_")
-        ]
+        issue_keys = self.app.jira.cache.keys()
         self.all_issues = [
-            self.app.issue_cache.shelve[key]
+            self.app.jira.cache.get_issue(key)
             for key in issue_keys
         ]
         self.search = IncrementalSearch(self.all_issues, extract_issue)
-                                        #IncrementalSearch.recursive_extract_fn)
+        #IncrementalSearch.recursive_extract_fn)
 
     def _update_search_state(self):
         self.search.search(self.query)
@@ -99,6 +97,8 @@ class SearchView(View):
         self.app.bindings.register(["C-n", "DOWN"], "Next", self.action_next)
         self.app.bindings.register(["C-p", "UP"], "Previous", self.action_prev)
         self.app.bindings.add_hint("Type to search incrementally")
+        self.app.bindings.add_hint("@assignee, rep=reporter, st=status")
+        self.app.bindings.add_hint("k=key")
         self.app.console.set_cursor(True)
 
     def on_leave(self):
@@ -106,8 +106,15 @@ class SearchView(View):
         self.app.console.set_cursor(False)
 
     def action_select(self):
-        self.app.console.status("SELECTED")
-        self.app.display.redraw_view()
+        # Get selected issue
+        if not self.results:
+            self.app.console.status("No issue selected.")
+            return
+
+        result = self.results[self.selected_idx]
+        key = result['key']
+        view = IssueView(self.app, key)
+        self.app.display.navigate(view)
 
     def action_next(self):
         self.selected_idx += 1

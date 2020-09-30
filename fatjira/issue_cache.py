@@ -126,3 +126,16 @@ class IssueCache:
             # data in this query.
             if not results:
                 break
+
+    def keys(self):
+        return [
+            key
+            for key in self.shelve.keys()
+            if not key.startswith("_")
+        ]
+
+    def get_issue(self, key, refresh=True):
+        """
+        TODO: Refresh before returning, unless offline mode.
+        """
+        return self.shelve[key]

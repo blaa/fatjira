@@ -7,7 +7,7 @@ class IncrementalSearch:
 
     def __init__(self, documents, extract_fn):
         self.query = ""
-        self.documents = documents[:]
+        self.documents = documents
         # Extracted texts related to the documents by index
         self.extracts = []
         # { "query": [result_idx1, ...], "query a": [result_idx2, ...], ...}

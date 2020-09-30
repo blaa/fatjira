@@ -1,8 +1,9 @@
+import os
 import logging
 import argparse
-from yacui import App
+from yacui import App, Renderer
 from fatjira.views import DashboardView, SearchView
-from fatjira import ServiceJira, IssueCache
+from fatjira import ServiceJira
 from fatjira import FatjiraTheme
 
 
@@ -60,23 +61,25 @@ def main():
 
     # Connect to Jira first. FIXME: Do it lazily in background
     setup_logging()
-    jira_service = ServiceJira(config.JIRA)
+    jira_service = ServiceJira(config.JIRA, config.ISSUES)
     if not args.offline:
         jira_service.connect()
-
-    issue_cache = IssueCache(config.ISSUES, jira_service.jira)
 
     app = App(DashboardView, theme_cls=FatjiraTheme, debug=args.debug)
     app.config = config
     app.jira = jira_service
-    app.issue_cache = issue_cache
+
+    # Template renderer
+    here = os.path.dirname(os.path.realpath(__file__))
+    template_path = os.path.join(here, "templates")
+    app.renderer = Renderer(template_path)
 
     if args.update:
         if args.offline:
             print("Unable to update while offline")
             return
         logging.info("Executing update from CLI")
-        issue_cache.update()
+        jira_service.cache.update()
         return
     elif args.shell:
         logging.info("Executing shell")

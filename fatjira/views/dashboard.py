@@ -8,6 +8,7 @@ class DashboardView(CommonView):
     """
     Main application view
     """
+
     def __init__(self, app):
         super().__init__(app)
         self.update_in_progress = False
@@ -37,4 +38,3 @@ class DashboardView(CommonView):
         self.app.issue_cache.update()
         self.update_in_progress = False
         self.app.issue_cache.update()
-

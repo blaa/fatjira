@@ -1,5 +1,5 @@
-from .service_jira import ServiceJira
 from .issue_cache import IssueCache
+from .service_jira import ServiceJira
 from .incremental_search import IncrementalSearch
 
 from . import views
