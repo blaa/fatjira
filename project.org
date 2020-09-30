@@ -7,20 +7,51 @@ Github might not render this file correctly.
 ** DONE Loading and synchronizing local cache of issues
    CLOSED: [2020-09-29 Tue 00:13]
 ** DONE Interface for incrementally searching the issues.
-* [0/3] v1: Make it usable
-** TODO Cleanup the PoC of incremental search
-** TODO Make the search non-blocking (threads should be just fine)
-** TODO Make the synchronization non-blocking.
-** TODO Add dashboard information
-   - Date of last sync, some stats.
-   - Some current status of open issues, worklogs... maybe jinja template?
-** TODO Issue view with some details and action keys.
+
+
+* [2/6] v1: Make it usable - functionality showcase.
+** DONE Cleanup the PoC of incremental search
+   CLOSED: [2020-09-29 Tue 16:14]
+   Published, more/less cleanuped.
+** DONE Issue view with some details.
+   CLOSED: [2020-09-30 Wed 02:55]
+   - Summary, description
+   - Assignee, reporter
+   - Status
+   - Generate with configurable jinja? (maybe later?)
+** TODO Adding worklogs from issue view
+** TODO Add some dashboard information
+   - Database stats:
+     - Date of the last sync.
+     - Number of issues
+   - Current user stats? (Jinja2?)
+     - Like number of assigned issues split by status.
+     - Worklogs stats.
+** TODO Show status and issue type in a search list.
+   Different themes based on... status? Or Issue type.
 ** TODO Synchronizing worklogs along the rest of data.
-** TODO Adding worklogs.
-* [0/2] v2: Ideas.
-** TODO Transitioning issue
-** TODO Creating similar issues using templates.
+
+* [0/8] v2: Close and simple needs.
+** TODO Creating similar issues from templates (remote work application).
+** TODO Move config to YAML and handle user install via ~/.config/fatjira
+** TODO Package so it's pip-installable
+** TODO Make the search non-blocking (threading should be just fine)
+** TODO Make the synchronization non-blocking.
+** TODO Generic table renderer - not bound to the view.
+** TODO Transitioning issue.
+   Learning which transitions are possible might be tricky, but it should be
+   simple to handle few simple transitions for most projects.
+** TODO Assigning issue.
+   - To myself, unassigning
+* [0/4] v3: Further Ideas
+** TODO Queuening all operations on jira in a queue in case there's a lag.
+   Ability to revisit the queue, see operations and retry failed.
+   This would need the ops to be defined differentially.
+** TODO Editing yaml-exported issue in an external editor - jira-go like.
+** TODO Board view.
+** TODO Backlog view.
+
+
 * Bugs?
 ** TODO Should each searched term match only the beginning of words?
 ** TODO Use \ or "" to combine terms?
-* TODO Package so it's pip-installable
