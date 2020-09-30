@@ -23,7 +23,7 @@ class App:
         self.theme_cls = theme_cls
 
         self._stop = False
-        self.console = Console(self._resize_callback, debug)
+        self.console = Console(debug)
         self.display = Display(self, self.console)
         self.bindings = Bindings(self)
         self.discovery = Discovery(self)
@@ -63,9 +63,3 @@ class App:
     def stop(self):
         "Called by views to schedule application stop"
         self._stop = True
-
-    def _resize_callback(self):
-        """
-        Redraw on resize
-        """
-        self.display.redraw_view()

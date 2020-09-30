@@ -133,10 +133,14 @@ def get_key(wnd):
     """
     ESC = '\x1b'
     try:
-        key = _decode_ctrl(wnd.get_wch())
+        key = wnd.get_wch()
     except curses.error:
         return None
 
+    if key == curses.KEY_RESIZE:
+        return key
+
+    key = _decode_ctrl(key)
     if key == '\x7f':
         return 'BACKSPACE'
     elif key != ESC:

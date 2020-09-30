@@ -1,7 +1,6 @@
 # (C) 2020 by Tomasz bla Fortuna
 # License: MIT
 
-from signal import signal, SIGWINCH
 import curses
 import curses.textpad
 
@@ -13,7 +12,7 @@ class Console:
     Curses facade.
     """
 
-    def __init__(self, resize_callback=None, debug=False):
+    def __init__(self, debug=False):
         """
         Args:
           resize_callback: Called when resize is detected to redraw view
@@ -22,14 +21,11 @@ class Console:
         self.stdscr = None
         self.debug = debug
 
-        # TODO: Resize support is partial.
-        self.resize_callback = resize_callback
-        signal(SIGWINCH, self.resize)
-
         self.wnd_view = None
         self.wnd_discovery = None
         self.wnd_status = None
         self.wnd_debug = None
+        self.resize_required = False
 
     def start(self):
         "Configure terminal options for ncurses app"
@@ -68,12 +64,18 @@ class Console:
             self.start()
 
     def _start_windows(self):
+        lines, cols = self.stdscr.getmaxyx()
         # Configuration
         lines_discovery = 5
         lines_status = 1
-        lines_debug = 10 if self.debug else 0
 
-        lines, cols = self.stdscr.getmaxyx()
+        if not self.debug:
+            lines_debug = 0
+        else:
+            # Use at most 10 lines for debug, and decrease on small screens.
+            lines_debug = min(10, int(0.2 * lines))
+            lines_debug = max(lines_debug, 3)
+
         lines_view = lines - lines_status - lines_discovery - lines_debug
 
         self.wnd_view = curses.newwin(lines_view, cols, 0, 0)
@@ -94,14 +96,18 @@ class Console:
         """
         return keyparser.get_key(self.wnd_view)
 
-    def resize(self, a, b):
-        "Handle SIGWINCH signal which happens on terminal resize"
+    def resize(self):
+        "Handle resize event"
+
         if not self.stdscr:
             return
-        y, x = self.stdscr.getmaxyx()
+
+        # Cleanup.
+        self.stdscr.erase()
         self.stdscr.refresh()
-        if self.resize_callback:
-            self.resize_callback()
+
+        # Create new windows in new size.
+        self._start_windows()
 
     def query_string(self, prompt):
         "Query for a string using a textpad"
