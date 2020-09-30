@@ -7,8 +7,6 @@ from fatjira.views import IssueView
 
 def extract_issue(issue):
     "Experimental issue extractor"
-    if 'fields' not in issue:
-        raise Exception(issue)
     f = issue['fields']
     parts = [
         issue['key'],
@@ -18,6 +16,7 @@ def extract_issue(issue):
         "@" + f['assignee']['name'] if f['assignee'] else "none",
         "rep=" + f['reporter']['name'] if f['reporter'] else "none",
         "st=" + f['status']['name'].upper().replace(" ", ""),
+        "t=" + f['issuetype']['name'],
         # Components?
     ]
     return " ".join(parts)
@@ -37,12 +36,10 @@ class SearchView(View):
         self.results = []
 
         # TEMP
-        issue_keys = self.app.jira.cache.keys()
-        self.all_issues = [
-            self.app.jira.cache.get_issue(key)
-            for key in issue_keys
-        ]
-        self.search = IncrementalSearch(self.all_issues, extract_issue)
+        with self.app.debug.time("Load all issues"):
+            self.all_issues = self.app.jira.all_cached_issues()
+        with self.app.debug.time("Initiate search"):
+            self.search = IncrementalSearch(self.all_issues, extract_issue)
         #IncrementalSearch.recursive_extract_fn)
 
     def _update_search_state(self):
@@ -98,7 +95,10 @@ class SearchView(View):
         self.app.bindings.register(["C-p", "UP"], "Previous", self.action_prev)
         self.app.bindings.add_hint("Type to search incrementally")
         self.app.bindings.add_hint("@assignee, rep=reporter, st=status")
-        self.app.bindings.add_hint("k=key")
+        self.app.bindings.add_hint("k=key t=type")
+        msg = "You are " + ("online" if self.app.jira.is_connected() else "offline")
+        self.app.bindings.add_hint(msg)
+
         self.app.console.set_cursor(True)
 
     def on_leave(self):
@@ -108,7 +108,7 @@ class SearchView(View):
     def action_select(self):
         # Get selected issue
         if not self.results:
-            self.app.console.status("No issue selected.")
+            self.app.display.status("No issue selected.")
             return
 
         result = self.results[self.selected_idx]

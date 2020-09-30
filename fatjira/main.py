@@ -50,7 +50,7 @@ def shell(app):
     "Run shell with access to important variables"
     from IPython import embed
     jira = app.jira
-    cache = app.issue_cache
+    cache = jira.cache
     print("Available: jira, app, cache")
     embed()
 

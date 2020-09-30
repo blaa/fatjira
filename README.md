@@ -31,8 +31,11 @@ Testing with 5500 jira issues, each loaded with 333 custom fields (not filtered
 yet). Current PoC searches them by 6 fields in unnoticeable time even in a
 synchronous way. It does take 400MB RAM and loading from disc takes around 2
 seconds. On disc, local cache takes 110MB. Synchronisation (depends on many
-factors) of local cache takes around 10 minutes, and further daily resync up to
+factors) of local cache takes around 6 minutes, and further daily resync up to
 30 seconds (most time was taken by logging in).
+
+When filtering the custom keys out during sync, local store takes 48MB, and
+loading takes 0.7s instead of 2s.
 
 I considered combining it with orgassist project as it scratches a similar itch.
 

@@ -50,6 +50,9 @@ Github might not render this file correctly.
 ** TODO Editing yaml-exported issue in an external editor - jira-go like.
 ** TODO Board view.
 ** TODO Backlog view.
+** TODO Server!
+   Not much more is needed to have a central issue server and drop Jira dependency.
+   If so - the name is not so well chosen.
 
 
 * Bugs?

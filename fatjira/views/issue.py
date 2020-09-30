@@ -11,20 +11,23 @@ class IssueView(CommonView):
     def __init__(self, app, key):
         super().__init__(app)
         self.key = key
-        self.issue = self.app.jira.cache.get_issue(key)
+        self.issue = self.app.jira.get_issue(key)
 
     def redraw(self, wnd: _curses.window):
         "Refresh the view display"
         wnd.clear()
         self.app.renderer.on_wnd(wnd, self.app.theme, 0, 0,
                                  "issue_view.j2",
-                                 key=self.issue["key"],
-                                 issue=self.issue["fields"])
+                                 key=self.issue.key,
+                                 issue=self.issue.fields)
 
     def on_enter(self):
         super().on_enter()
         self.app.bindings.register("w", "Worklogs", self.menu_worklog)
         self.app.bindings.register("t", "Transitions", self.menu_transitions)
+
+        self.app.bindings.register("n", "Next issue", self.action_next)
+        self.app.bindings.register("p", "Previous issue", self.action_prev)
 
     def on_leave(self):
         super().on_leave()
@@ -47,8 +50,14 @@ class IssueView(CommonView):
         self.app.display.redraw_view()
 
     def action_worklog_add(self):
-        pass
+        self.app.display.status("Not supported yet")
 
     def menu_back(self):
         self.app.bindings.pop()
         self.app.display.redraw_view()
+
+    def action_next(self):
+        self.app.display.status("Not supported yet")
+
+    def action_prev(self):
+        self.app.display.status("Not supported yet")

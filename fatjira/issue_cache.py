@@ -1,21 +1,20 @@
-import logging
 from datetime import datetime
 from time import time
 import shelve
 
 
-log = logging.getLogger('issue_cache')
-
-
 class IssueCache:
     """
     Cache Jira issues locally for instant access.
+
+    - Per-issue API
+    - Incremental synchronization.
     """
-    TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.000%z'
 
     def __init__(self, config, jira):
         self.jira = jira
         # TODO: Shelve is slow, move to xapian? Maaaybe?
+        # Reading 5000 issues from disc takes 1.2s (109MB file)
         # NOTE: for 4000 issues seem fast enough.
         self.shelve = shelve.open(config['cache_path'])
 
@@ -25,12 +24,13 @@ class IssueCache:
         assert self.field_filter is None or isinstance(self.field_filter, list)
         assert isinstance(self.issue_filter, str)
 
-    def parse_time(self, string):
+    def _parse_time(self, string):
         "Issue time into timestamp"
-        return datetime.strptime(string, self.TIME_FORMAT).timestamp()
+        time_format = '%Y-%m-%dT%H:%M:%S.000%z'
+        return datetime.strptime(string, time_format).timestamp()
 
-    def format_time(self, ts):
-        "Format timestamp into Jira-parseable time"
+    def _format_time(self, ts):
+        "Format timestamp into a Jira-parseable time"
         return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M")
 
     def load_field_mapping(self):
@@ -45,7 +45,7 @@ class IssueCache:
         """
         status = self.shelve.get('_update_status', {
             # Date of the last issue.
-            'last_updated': self.parse_time(self.sync_since),
+            'last_updated': self._parse_time(self.sync_since),
             'issues_read': 0,
 
             'fields_update_ts': 0,
@@ -63,7 +63,8 @@ class IssueCache:
                 raise Exception(f"Status {status} doesn't have key {key} - recreate DB")
             status[key] = value
         self.shelve['_update_status'] = status
-        log.info("Updating status: %r", status)
+        self.shelve.sync()
+        self.app.log.info("Updating status: %r", status)
 
     def update_issues(self):
         """
@@ -74,12 +75,11 @@ class IssueCache:
         while True:
             status = self.get_status()
             # Create query
-            last_updated = self.format_time(status['last_updated'])
+            last_updated = self._format_time(status['last_updated'])
             query = (
                 f'({self.issue_filter}) and updated >= "{last_updated}" ORDER BY updated ASC'
             )
-
-            for page_no, page in self.read_pages(query):
+            for page_no, page in self._read_pages(query):
                 if not page:
                     self.update_status(issues_update_ts=time())
                     return
@@ -88,7 +88,7 @@ class IssueCache:
                     # TODO: Compare existing entries with new ones to update stats better.
                     self.shelve[issue.key] = issue.raw
                     status['issues_read'] += 1
-                    status['last_updated'] = self.parse_time(issue.fields.updated)
+                    status['last_updated'] = self._parse_time(issue.fields.updated)
                     # TODO: Add worklog reading and caching
 
                 self.update_status(issues_read=status['issues_read'],
@@ -98,16 +98,19 @@ class IssueCache:
         """
         Update field cache.
         """
-        fields = self.jira.fields()
+        fields = self.jira.link.fields()
         self.shelve['_fields'] = fields
         self.update_status(fields_update_ts=time())
 
     def update(self):
         "Full update"
+        if self.jira.link is None:
+            return False
         self.update_fields()
         self.update_issues()
+        return True
 
-    def read_pages(self, query, page_size=250, pages=8):
+    def _read_pages(self, query, page_size=250, pages=8):
         """
         Read multiple pages from a single query. It must return more data using an
         iterator that might be bulk-changed within the same minute. Otherwise
@@ -115,27 +118,27 @@ class IssueCache:
         """
         start_at = 0
         for page in range(pages):
-            log.info("Reading query %s page_size=%d page_offset=%d", query, page, start_at)
-            results = self.jira.search_issues(query,
-                                              maxResults=page_size,
-                                              startAt=start_at)
+            self.app.log.info("Reading query %s page_size=%d page_offset=%d",
+                              query, page, start_at)
+            results = self.jira.link.search_issues(query,
+                                                   maxResults=page_size,
+                                                   startAt=start_at,
+                                                   fields=self.field_filter)
             start_at += len(results)
-            log.info("Read %d entries", len(results))
+            self.app.log.info("Read %d entries", len(results))
             yield (page, results)
             # NOTE: Yield empty page at least once to denote that there's no more
             # data in this query.
             if not results:
                 break
 
-    def keys(self):
+    def issue_list(self):
+        "Keys of all cached issues"
         return [
             key
             for key in self.shelve.keys()
             if not key.startswith("_")
         ]
 
-    def get_issue(self, key, refresh=True):
-        """
-        TODO: Refresh before returning, unless offline mode.
-        """
-        return self.shelve[key]
+    def get_raw(self, key):
+        return self.shelve.get(key, None)
