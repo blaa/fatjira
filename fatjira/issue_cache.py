@@ -1,5 +1,7 @@
-from datetime import datetime
 from time import time
+from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
+from fatjira import log
 import shelve
 
 
@@ -21,6 +23,18 @@ class IssueCache:
         self.issue_filter = config['issue_filter']
         self.field_filter = config['field_filter']
         self.sync_since = config['sync_since']
+        self.sync_worklogs = config['sync_worklogs']
+
+        # Totals
+        self.took_worklogs = 0
+        # Real time to read worklogs in parallel and store in DB
+        self.took_worklogs_and_store = 0
+        self.took_searches = 0
+        self.total_read = 0
+        self.update_start = 0
+
+        self.pool = ThreadPoolExecutor(max_workers=config['threads'])
+
         assert self.field_filter is None or isinstance(self.field_filter, list)
         assert isinstance(self.issue_filter, str)
 
@@ -64,7 +78,9 @@ class IssueCache:
             status[key] = value
         self.shelve['_update_status'] = status
         self.shelve.sync()
-        self.app.log.info("Updating status: %r", status)
+        ips = status['issues_read'] / (time() - self.update_start)
+        log.info("Updating status: last_updated=%s read=%d, issues/s=%.2f",
+                 self._format_time(status['last_updated']), status['issues_read'], ips)
 
     def update_issues(self):
         """
@@ -84,15 +100,52 @@ class IssueCache:
                     self.update_status(issues_update_ts=time())
                     return
 
-                for issue in page:
+                start = time()
+                if self.sync_worklogs:
+                    log.info("Synchronizing worklogs for %d issues on a page",
+                             len(page))
+                    # Timeout is huge to only kill hunged --update automats.
+                    page = self.pool.map(self.read_worklogs, page,
+                                         timeout=30 + len(page) * 20)
+
+                for i, issue in enumerate(page):
+                    raw = issue.raw
                     # TODO: Compare existing entries with new ones to update stats better.
-                    self.shelve[issue.key] = issue.raw
+                    self.shelve[issue.key] = raw
                     status['issues_read'] += 1
                     status['last_updated'] = self._parse_time(issue.fields.updated)
-                    # TODO: Add worklog reading and caching
+                    if i % 20 == 0:
+                        # Store periodically; reading worklogs can take a lot of time.
+                        self.update_status(issues_read=status['issues_read'],
+                                           last_updated=status['last_updated'])
 
                 self.update_status(issues_read=status['issues_read'],
                                    last_updated=status['last_updated'])
+                self.took_worklogs_and_store += time() - start
+
+    def read_worklogs(self, issue):
+        """
+        Read worklogs for a given issue and add to raw data.
+
+        Watchout: this can be executed in parallel.
+        """
+        if issue.fields.timespent is None or issue.fields.timespent == 0:
+            return issue
+
+        start = time()
+        worklogs = self.jira.link.worklogs(issue.key)
+        self.took_worklogs += time() - start
+        # Simulate a structure jira module normally uses when
+        # reading worklogs.
+        # FIXME: This returns a lot of unnecessary information.
+        issue.raw['fields']['worklog'] = {
+            'total': len(worklogs),
+            'worklogs': [
+                worklog.raw
+                for worklog in worklogs
+            ]
+        }
+        return issue
 
     def update_fields(self):
         """
@@ -104,10 +157,16 @@ class IssueCache:
 
     def update(self):
         "Full update"
-        if self.jira.link is None:
-            return False
-        self.update_fields()
-        self.update_issues()
+        try:
+            if self.jira.link is None:
+                return False
+            self.update_start = time()
+            self.update_fields()
+            self.update_issues()
+            log.info("Field and issue update took %.2f", time() - self.update_start)
+        finally:
+            self.shelve.sync()
+
         return True
 
     def _read_pages(self, query, page_size=250, pages=8):
@@ -118,15 +177,21 @@ class IssueCache:
         """
         start_at = 0
         for page in range(pages):
-            self.app.log.info("Reading query %s page_size=%d page_offset=%d",
-                              query, page, start_at)
+            log.info("Reading issues page=%d page_offset=%d size=%d",
+                     page, start_at, page_size)
+            start = time()
             results = self.jira.link.search_issues(query,
                                                    maxResults=page_size,
                                                    startAt=start_at,
                                                    fields=self.field_filter)
+            self.took_searches += time() - start
             start_at += len(results)
-            self.app.log.info("Read %d entries", len(results))
+            self.total_read += len(results)
             yield (page, results)
+            log.info("Stat: %d read; searches %.2fs worklogs/store %.2fs "
+                     "worklog_read %.2fs thread",
+                     self.total_read, self.took_searches,
+                     self.took_worklogs_and_store, self.took_worklogs)
             # NOTE: Yield empty page at least once to denote that there's no more
             # data in this query.
             if not results:
