@@ -2,7 +2,7 @@
 # License: MIT
 
 from time import time
-from yacui import View, StopNavigation
+from yacui import View, StopNavigation, log
 
 
 class Display:
@@ -86,7 +86,7 @@ class Display:
         self.view_current.redraw(self.app.console.wnd_view)
         took = time() - start
         if took > 0.1:
-            self.app.log.warning("Screen redraw took %.2f", took)
+            log.warning("Screen redraw took %.2f", took)
 
         if self.app.console.wnd_debug:
             self.app.debug.redraw(self.app.console.wnd_debug)

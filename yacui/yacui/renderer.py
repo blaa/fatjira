@@ -2,6 +2,9 @@ import re
 import jinja2
 import _curses
 
+from yacui import log
+
+
 class Renderer:
     """
     Handle Jinja2 templates.
@@ -24,18 +27,29 @@ class Renderer:
         template = self.env.get_template(template)
         return template.render(**kwargs)
 
-    def on_wnd(self, wnd: _curses.window, theme, y, x, template, **kwargs):
+    def on_wnd(self, wnd: _curses.window, theme, y, x, scroll, template, **kwargs):
         """
         Render template on the window.
 
         TODO: Styles are a bit hacky.
+
+        Args:
+          y, x: Template start position
+          scroll: skip this number of initial template lines (for scrolling)
+          template: path to the template
+          kwargs: template arguments.
         """
         splitter = re.compile('(<theme=[_a-zA-Z0-9]+>|</theme>)')
         theme_parser = re.compile('^<theme=([_a-zA-Z0-9]+)>$')
 
         lines, cols = wnd.getmaxyx()
         self.max_cols = cols  # For wrap filter
-        string = self.render_string(template, **kwargs)
+        try:
+            string = self.render_string(template, **kwargs)
+        except jinja2.exceptions.TemplateError:
+            log.exception(f"Template rendering {template} failed.")
+            wnd.addstr(y, x, "*TEMPLATE RENDERING FAILED*")
+            return
 
         style = 0
         for line in string.split("\n"):
@@ -53,13 +67,17 @@ class Renderer:
                     continue
                 chunk = jinja2.Markup(chunk).unescape()
                 try:
-                    wnd.addnstr(y, col, chunk, cols - col, style)
+                    if scroll == 0:
+                        wnd.addnstr(y, col, chunk, cols - col, style)
                     col += len(chunk)
                 except _curses.error:
                     # Overflow is ok at the LAST character in LAST line.
                     return
 
-            y += 1
+            if scroll > 0:
+                scroll -= 1
+            else:
+                y += 1
             if y == lines:
                 break
 
@@ -80,4 +98,3 @@ class Renderer:
         if cur_line:
             lines.append(" ".join(cur_line))
         return "\n".join(lines)
-

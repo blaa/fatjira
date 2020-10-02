@@ -28,7 +28,6 @@ class App:
         self.bindings = Bindings(self)
         self.discovery = Discovery(self)
         self.debug = DebugWindow(self)
-        self.log = logging.getLogger('yacui')
 
     def loop(self):
         "Main application loop"

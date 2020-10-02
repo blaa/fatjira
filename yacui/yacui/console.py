@@ -114,7 +114,9 @@ class Console:
         # FIXME: Readline would be better
 
         # Show prompt
-        self.status(prompt)
+        self.wnd_status.erase()
+        self.wnd_status.addstr(0, 0, prompt)
+        self.wnd_status.refresh()
 
         # Create textpad
         lines, cols = self.stdscr.getmaxyx()
@@ -136,7 +138,9 @@ class Console:
 
     def query_bool(self, prompt):
         "Query for a yes/no answer"
-        self.status(prompt + " (y/n)")
+        self.wnd_status.erase()
+        self.wnd_status.addstr(0, 0, prompt + " (y/n)")
+        self.wnd_status.refresh()
         status = False
         # Leave halfdelay mode
         curses.cbreak()
@@ -147,6 +151,7 @@ class Console:
                 break
             elif key in {'n', 'N'}:
                 break
-        self.status("")
+        self.wnd_status.erase()
+        self.wnd_status.refresh()
         curses.halfdelay(5)
         return status

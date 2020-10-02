@@ -1,3 +1,6 @@
+import logging
+log = logging.getLogger('yacui')
+
 from .view import View, StopNavigation
 from .bindings import Bindings
 from .discovery import Discovery
