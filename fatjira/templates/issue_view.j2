@@ -1,7 +1,16 @@
 <theme=TITLE>Issue:</theme> <theme=ISSUE_KEY>{{ key }}</theme> (<theme=TITLE>{{ issue.issuetype.name }}</theme>)
 <theme=TITLE>Status:</theme> {{ issue.status.name }}
 <theme=TITLE>Summary:</theme> {{ issue.summary | wrap }}
-<theme=TITLE>Reporter:</theme> {{ issue.reporter.name if issue.reporter else "unknown" }}
-<theme=TITLE>Assignee:</theme> {{ issue.assignee.name if issue.assignee else "unassigned" }}
+<theme=TITLE>Reporter:</theme> <theme=USER_NAME>{{ issue.reporter.name if issue.reporter else "unknown" }}</theme>
+<theme=TITLE>Assignee:</theme> <theme=USER_NAME>{{ issue.assignee.name if issue.assignee else "unassigned" }}</theme>
 
 {{ issue.description or "No description" }}
+
+{% if issue.worklog -%}
+------------ Worklogs -------------
+{% for worklog in issue.worklog.worklogs -%}
+  <theme=WORK_START>{{worklog.started}} <theme=WORK_TIME>{{worklog.timeSpent}} <theme=USER_NAME>{{ worklog.author.name }}</theme>
+  {{worklog.comment}}
+  
+{% endfor -%}
+{%- endif -%}
