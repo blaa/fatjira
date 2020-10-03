@@ -38,6 +38,9 @@ class Renderer:
           scroll: skip this number of initial template lines (for scrolling)
           template: path to the template
           kwargs: template arguments.
+        Returns:
+          False: We hit the line limit during render (output cut)
+          True: everything filled.
         """
         splitter = re.compile('(<theme=[_a-zA-Z0-9]+>|</theme>)')
         theme_parser = re.compile('^<theme=([_a-zA-Z0-9]+)>$')
@@ -49,7 +52,7 @@ class Renderer:
         except jinja2.exceptions.TemplateError:
             log.exception(f"Template rendering {template} failed.")
             wnd.addstr(y, x, "*TEMPLATE RENDERING FAILED*")
-            return
+            return True
 
         style = 0
         for line in string.split("\n"):
@@ -72,14 +75,16 @@ class Renderer:
                     col += len(chunk)
                 except _curses.error:
                     # Overflow is ok at the LAST character in LAST line.
-                    return
+                    # FIXME: Which makes it difficult to decide if we fit
+                    return False
 
             if scroll > 0:
                 scroll -= 1
             else:
                 y += 1
             if y == lines:
-                break
+                return False
+        return True
 
     def wrap(self, text):
         "Filter to auto wrap text to the console width."
