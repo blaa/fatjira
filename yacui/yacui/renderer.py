@@ -9,11 +9,9 @@ class Renderer:
     """
     Handle Jinja2 templates.
 
-    TODO: Handle drawing on the screen with selected part of a THEME. For
-    example use XML-like escaping and do <style theme="ISSUE_KEY">in issue key
-    style</style>; but maybe something simpler is possible.
-
-    TODO: Autowrap to fit on screen.
+    TODO: Add markup for text align and horizontal lines.
+    TODO: Table renderer?
+    TODO: Autowrap to fit on screen as an option.
     """
 
     def __init__(self, template_path):

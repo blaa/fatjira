@@ -25,7 +25,8 @@ class Console:
         self.wnd_discovery = None
         self.wnd_status = None
         self.wnd_debug = None
-        self.resize_required = False
+        # Cursor mode should be persistent across cleanup/start
+        self.cursor_visible = 0
 
     def start(self):
         "Configure terminal options for ncurses app"
@@ -37,14 +38,16 @@ class Console:
         curses.start_color()
         curses.use_default_colors()
         assert curses.has_colors()
-        curses.curs_set(0)
+        curses.curs_set(self.cursor_visible)
         self.stdscr.keypad(1)
         self._start_windows()
 
     def set_cursor(self, enabled):
         if enabled:
+            self.cursor_visible = 1
             curses.curs_set(1)
         else:
+            self.cursor_visible = 0
             curses.curs_set(0)
 
     def cleanup(self):

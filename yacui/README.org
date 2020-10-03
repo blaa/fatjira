@@ -138,8 +138,13 @@ App ----> Console
     lines of code - without full edit though.
     CLOSED: [2020-09-27 Sun 15:10]
 
+*** TODO Negated search tags with !
+*** TODO Configurable default filter (eg. !st=done)
 ** Backlog
 *** Key chords: C-c M-e?
+*** Themable keybindings via config file.
+    Name view, and name keybindings, allow overriding them via config.
+*** Incremental search of worklogs
 ** DONE [7/7] Implement a runnable core to build on.
    CLOSED: [2020-09-22 Tue 21:20]
 *** DONE View initialization
