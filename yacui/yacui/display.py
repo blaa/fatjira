@@ -81,10 +81,11 @@ class Display:
         Executed on each alteration to the view, bindings, etc. Mostly
         triggered by current view after something happens.
         """
-        self.app.discovery.redraw(self.app.console.wnd_discovery)
         start = time()
         self.view_current.redraw(self.app.console.wnd_view)
         took = time() - start
+        # Redraw discovery second as it might have changed during redraw of view.
+        self.app.discovery.redraw(self.app.console.wnd_discovery)
         if took > 0.1:
             log.warning("Screen redraw took %.2f", took)
 

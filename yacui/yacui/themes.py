@@ -15,7 +15,11 @@ class Default:
         c = self.color
         self.DISCOVERY_KEY = c("yellow", curses.A_BOLD)
         self.DISCOVERY_DESC = c("white", curses.A_BOLD)
+        self.DISCOVERY_KEY_DISABLED = c("darkgray", curses.A_BOLD)
+        self.DISCOVERY_DESC_DISABLED = c("darkgray")
         self.DISCOVERY_HINT = c("white")
+
+        # Page titles
         self.TITLE = c("white", curses.A_BOLD)
 
     def init_colors(self):
@@ -36,7 +40,7 @@ class Default:
             'magenta',
             'cyan',
             'gray',
-            'darkgrey',
+            'darkgray',
         ]
         self.color_map = {
             name: curses.color_pair(i)

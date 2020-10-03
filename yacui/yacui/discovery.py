@@ -18,7 +18,7 @@ class Discovery:
         self.lines_max = None
         self.cols_max = None
 
-    def _draw_column(self, wnd, col, cmds):
+    def _draw_column(self, wnd, col, cmds, disabled):
         "Draw single column"
         theme = self.app.theme
         line = self.margin_top
@@ -30,8 +30,15 @@ class Discovery:
 
         for cmd in cmds_in_column:
             keys = " ".join(cmd.keys)
-            wnd.addstr(line, col, keys, theme.DISCOVERY_KEY)
-            wnd.addstr(line, col + max_key + 1, cmd.desc, theme.DISCOVERY_DESC)
+            theme_key = theme.DISCOVERY_KEY
+            theme_desc = theme.DISCOVERY_DESC
+            for key in cmd.keys:
+                if key in disabled:
+                    theme_key = theme.DISCOVERY_KEY_DISABLED
+                    theme_desc = theme.DISCOVERY_DESC_DISABLED
+                    break
+            wnd.addstr(line, col, keys, theme_key)
+            wnd.addstr(line, col + max_key + 1, cmd.desc, theme_desc)
             line += 1
             max_width = max(max_width, len(cmd.desc) + max_key + 1)
 
@@ -58,12 +65,16 @@ class Discovery:
         wnd.erase()
         wnd.hline(0, 0, curses.ACS_HLINE, self.cols_max)
 
-        cmds = self.app.bindings.get_current().commands[:]
+        state = self.app.bindings.get_current()
+        if state.render_callback is not None:
+            state.render_callback()
+        cmds = state.commands[:]
 
         col = self.margin_left
 
         while cmds:
-            cmds, max_width = self._draw_column(wnd, col, cmds)
+            cmds, max_width = self._draw_column(wnd, col,
+                                                cmds, state.disabled)
             col += max_width + self.margin_column
 
         hints = self.app.bindings.get_current().hints[:]

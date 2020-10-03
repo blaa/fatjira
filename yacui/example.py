@@ -62,13 +62,16 @@ class HomeView(CommonView):
 
     def on_enter(self):
         super().on_enter()
+        # Imperative definition; it's also possible to do it declaratively.
         self.app.bindings.register("c", "Test click", self.action_click)
         self.app.bindings.register("f", "Query string", self.action_read)
         self.app.bindings.register("g", "Query bool", self.action_query_bool)
         self.app.bindings.register(["s", "C-r"], "Secondary VIEW", self.action_navigate)
         self.app.bindings.register(["j", "F1"], "Action", self.action_click)
         self.app.bindings.register(["k", "M-k"], "More action", self.action_click)
-        self.app.bindings.register("l", "Noisiest of all", self.action_click)
+        self.app.bindings.register("l", "Noisiest description of all",
+                                   self.action_click)
+        self.app.bindings.disable("l")
         self.app.bindings.add_hint("Have fun.")
 
     def on_leave(self):
