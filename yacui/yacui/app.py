@@ -53,6 +53,7 @@ class App:
                         self.display.keypress(key)
         except KeyboardInterrupt:
             self.console.cleanup()
+            log.exception("User request, logging traceback for debugging")
             print("Quit on user request")
         except Exception:
             raise

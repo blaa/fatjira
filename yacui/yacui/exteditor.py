@@ -30,10 +30,17 @@ class ExtEditor:
             autoescape=True
         )
 
-    def run(self, template, **kwargs):
-        "Run editor with a given template file"
+    def edit(self, template, tmpl_args, validator=None):
+        """
+        Run editor with a given template file.
+
+        Args:
+          template: name of the template file within configured directory of templates.
+          tmpl_args: Arguments to the template
+          validator: Additional validator which must return non-None to accept the edit.
+        """
         template = self.env.get_template(template)
-        clean_template = template.render(**kwargs)
+        clean_template = template.render(**tmpl_args)
 
         with tempfile.NamedTemporaryFile(mode="w+") as f:
             f.write(clean_template)
@@ -41,6 +48,7 @@ class ExtEditor:
             mod_time = os.stat(f.name).st_mtime
             editor_command = self.command.format(f.name)
             while True:
+                # 1. Execute an editor and check if the user saved the data
                 self.app.console.cleanup()
                 os.system(editor_command)
                 self.app.console.start()
@@ -55,9 +63,9 @@ class ExtEditor:
 
                 f.seek(0, os.SEEK_SET)
                 data_after_change = f.read()
+                # 2. Handle YAML parsing
                 try:
                     parsed = yaml.safe_load(io.StringIO(data_after_change))
-                    return parsed
                 except Exception:
                     msg = "Unable to parse result as YAML, do you want to retry?"
                     answer = self.app.console.query_bool(msg)
@@ -65,3 +73,16 @@ class ExtEditor:
                         return None
                     continue
 
+                # 3. Handle external validation
+                if validator is not None:
+                    try:
+                        parsed = validator(parsed)
+                    except Exception as e:
+                        msg = " ".join(e.args)
+                        msg = "Unable to parse values ({}), do you want to retry?".format(msg)
+                        answer = self.app.console.query_bool(msg)
+                        if not answer:
+                            return None
+                        continue
+
+                return parsed
