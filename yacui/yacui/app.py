@@ -44,7 +44,7 @@ class App:
                     # TODO: Doesn't work yet.
                     # SIGWINCH might be necessary but works half-the-way still.
                     self.console.resize()
-                    self.display.redraw_view()
+                    self.display.redraw()
                 elif key is None:
                     self.display.tick()
                 else:

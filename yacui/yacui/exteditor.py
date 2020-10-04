@@ -12,6 +12,8 @@ class ExtEditor:
     Handle errors:
     - file not edited (by timestamp),
     - error in file (non-parseable).
+
+    TODO: Add cursor position setting and option to command template
     """
 
     def __init__(self, app, command, template_path):
@@ -42,7 +44,7 @@ class ExtEditor:
                 self.app.console.cleanup()
                 os.system(editor_command)
                 self.app.console.start()
-                self.app.display.redraw_view()
+                self.app.display.redraw()
                 file_was_saved = mod_time != os.stat(f.name).st_mtime
                 if not file_was_saved:
                     answer = self.app.console.query_bool("You haven't saved the file, "

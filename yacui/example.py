@@ -105,17 +105,17 @@ class HomeView(CommonView):
         self.app.display.status(f"Clicked for the {self.action_counter} times")
         message = f"{self.action_counter} click."
         self.log_message(message)
-        self.app.display.redraw_view()
+        self.app.display.redraw()
 
     def action_read(self):
         message = self.app.console.query_string("Enter some input: ")
         self.log_message(f"You've input: {message}")
-        self.app.display.redraw_view()
+        self.app.display.redraw()
 
     def action_query_bool(self):
         answer = self.app.console.query_bool("Do you want to answer?")
         self.log_message(f"You've answered: {answer}")
-        self.app.display.redraw_view()
+        self.app.display.redraw()
 
     def action_navigate(self):
         self.app.display.navigate(SecondView)
@@ -124,11 +124,11 @@ class HomeView(CommonView):
         "Called periodically, but irregularly"
         self.ticks += 1
         if self.ticks % 10 == 0:
-            self.app.display.redraw_view()
+            self.app.display.redraw()
 
     def keypress(self, key):
         self.log_message(f"Unhandled key: {key}")
-        self.app.display.redraw_view()
+        self.app.display.redraw()
 
 
 def run():

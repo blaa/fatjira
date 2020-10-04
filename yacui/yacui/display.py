@@ -53,7 +53,7 @@ class Display:
         else:
             self.view_current = view(self.app)
         self.view_current.on_enter()
-        self.redraw_view()
+        self.redraw()
         return True
 
     def back(self):
@@ -71,10 +71,10 @@ class Display:
 
         self.view_current = self.view_history.pop()
         self.view_current.on_enter()
-        self.redraw_view()
+        self.redraw()
         return True
 
-    def redraw_view(self):
+    def redraw(self):
         """
         Idempotently refreshed whole display.
 
