@@ -40,7 +40,6 @@ class SearchView(View):
             self.all_issues = self.app.jira.all_cached_issues()
         with self.app.debug.time("Initiate search"):
             self.search = IncrementalSearch(self.all_issues, extract_issue)
-        #IncrementalSearch.recursive_extract_fn)
 
     def _update_search_state(self):
         self.search.search(self.query)
@@ -61,6 +60,9 @@ class SearchView(View):
 
         msg = "{}/{}".format(len(self.results), len(self.all_issues))
         wnd.addstr(0, cols - len(msg), msg)
+
+        if self.selected_idx >= len(self.results):
+            self.selected_idx = max(0, len(self.results) - 1)
 
         line = 1
         max_summary = cols - 10 - 5
@@ -89,7 +91,7 @@ class SearchView(View):
 
     def on_enter(self):
         self.app.bindings.push()
-        self.app.bindings.register("C-g", "Back", self.app.display.back)
+        self.app.bindings.register("M-q", "Back", self.app.display.back)
         self.app.bindings.register("RET", "Select", self.action_select)
         self.app.bindings.register(["C-n", "DOWN"], "Next", self.action_next)
         self.app.bindings.register(["C-p", "UP"], "Previous", self.action_prev)
@@ -111,7 +113,12 @@ class SearchView(View):
             self.app.display.status("No issue selected.")
             return
 
-        result = self.results[self.selected_idx]
+        try:
+            result = self.results[self.selected_idx]
+        except IndexError:
+            self.selected_idx = 0
+            self.app.display.redraw()
+            return
         key = result['key']
         view = IssueView(self.app, key)
         self.app.display.navigate(view)
@@ -121,7 +128,7 @@ class SearchView(View):
         self.app.display.redraw()
 
     def action_prev(self):
-        self.selected_idx -= 1
+        self.selected_idx = max(0, self.selected_idx - 1)
         self.app.display.redraw()
 
     def keypress(self, key):

@@ -1,0 +1,23 @@
+# Adding worklog for issue {{ key }}
+time_spent:
+comment: 
+started: {{ started }}
+
+{# TODO: Total logged time #}
+
+# ---------------- Context -------------------
+# Summary: {{ issue.fields.summary }}
+# Status: {{ issue.fields.status.name }}
+# Reporter: {{ issue.reporter.name if issue.reporter else "unknown" }}
+# Assignee: {{ issue.assignee.name if issue.assignee else "unassigned" }}
+
+{% if worklogs -%}
+# ------------ Previous worklogs -------------
+{% for worklog in worklogs[:10] -%}
+# {{ worklog.author.name }}, {{ worklog.timeSpent }}, {{ worklog.started }}
+{% if worklog.comment -%}
+# {{worklog.comment}}
+
+{% endif -%}
+{% endfor -%}
+{%- endif -%}

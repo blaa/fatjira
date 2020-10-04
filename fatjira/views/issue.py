@@ -1,3 +1,4 @@
+from datetime import datetime
 import _curses
 
 from fatjira.views import CommonView
@@ -78,7 +79,44 @@ class IssueView(CommonView):
         self.app.display.redraw()
 
     def action_worklog_add(self):
-        self.app.display.status("Not supported yet")
+        """
+        Add worklog to the opened issue
+
+        TODO: Move outside the view.
+        """
+        def validator(data):
+            for req in ["started", "time_spent", "comment"]:
+                assert req in data, f"field {req} is required"
+            data['started'] = datetime.strptime(data['started'], "%Y-%m-%d %H:%M")
+            return data
+
+        if self.issue.fields.worklog:
+            worklogs = list(reversed(self.issue.fields.worklog.worklogs))
+        else:
+            worklogs = None
+
+        args = {
+            "key": self.key,
+            "issue": self.issue,
+            "started": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "worklogs": worklogs
+        }
+        response = self.app.exteditor.edit("worklog_entry.j2", args,
+                                           validator=validator)
+        if response is None:
+            self.app.bindings.pop()
+            self.app.display.redraw()
+            self.app.display.status("Adding worklog was cancelled.")
+            return
+
+        link = self.app.jira.link
+        self.app.display.status("Sending worklog to Jira...")
+        link.add_worklog(self.key,
+                         response['time_spent'], comment=response['comment'],
+                         started=response['started'])
+        self.app.bindings.pop()
+        self.app.display.redraw()
+        self.app.display.status("Worklog added.")
 
     def menu_back(self):
         self.app.bindings.pop()

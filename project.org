@@ -9,17 +9,11 @@ Github might not render this file correctly.
 ** DONE Interface for incrementally searching the issues.
 
 
-* [2/6] v1: Make it usable - functionality showcase.
-** DONE Cleanup the PoC of incremental search
-   CLOSED: [2020-09-29 Tue 16:14]
-   Published, more/less cleanuped.
-** DONE Issue view with some details.
-   CLOSED: [2020-09-30 Wed 02:55]
-   - Summary, description
-   - Assignee, reporter
-   - Status
-   - Generate with configurable jinja? (maybe later?)
-** TODO Adding worklogs from issue view
+* [4/9] v1: Make it usable - functionality showcase.
+** TODO Auto update issue after altering it.
+   After adding worklog; or on opening it in online mode
+** TODO "Refresh" action on issue view.
+** TODO Negative searches
 ** TODO Add some dashboard information
    - Database stats:
      - Date of the last sync.
@@ -29,7 +23,20 @@ Github might not render this file correctly.
      - Worklogs stats.
 ** TODO Show status and issue type in a search list.
    Different themes based on... status? Or Issue type.
-** TODO Synchronizing worklogs along the rest of data.
+** TODO Record GIF on fake data to show-case fatjira.
+** DONE Cleanup the PoC of incremental search
+   CLOSED: [2020-09-29 Tue 16:14]
+   Published, more/less cleanuped.
+** DONE Issue view with some details.
+   CLOSED: [2020-09-30 Wed 02:55]
+   - Summary, description
+   - Assignee, reporter
+   - Status
+   - Generate with configurable jinja? (maybe later?)
+** DONE Adding worklogs from issue view
+   CLOSED: [2020-10-04 Sun 22:31]
+** DONE Synchronizing worklogs along the rest of data.
+   CLOSED: [2020-10-04 Sun 22:31]
 
 * [0/8] v2: Close and simple needs.
 ** TODO Creating similar issues from templates (remote work application).
