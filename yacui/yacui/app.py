@@ -8,6 +8,7 @@ from yacui import Console, Display
 from yacui import Bindings, Discovery
 from yacui import DebugWindow
 from yacui import themes
+from yacui import log
 
 
 class App:

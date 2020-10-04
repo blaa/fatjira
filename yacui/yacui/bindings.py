@@ -26,6 +26,9 @@ class _State:
             if key in self.keymap:
                 raise Exception(f"Key {key} already is defined")
             self.keymap[key] = binding.action
+            if binding.action is None:
+                # Probably a placeholder.
+                self.disable(binding.keys)
 
         self.commands.append(binding)
 

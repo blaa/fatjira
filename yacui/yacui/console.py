@@ -129,7 +129,7 @@ class Console:
         text_box = curses.textpad.Textbox(tmp_win, insert_mode=True)
         curses.curs_set(1)
         input_string = text_box.edit()
-        curses.curs_set(0)
+        curses.curs_set(self.cursor_visible)
 
         # Hard to distinguish between accepted string and cancelled...
         input_string = input_string.strip()
@@ -142,7 +142,8 @@ class Console:
     def query_bool(self, prompt):
         "Query for a yes/no answer"
         self.wnd_status.erase()
-        self.wnd_status.addstr(0, 0, prompt + " (y/n)")
+        self.wnd_status.addstr(0, 0, prompt + " (y/n) ")
+        curses.curs_set(1)
         self.wnd_status.refresh()
         status = False
         # Leave halfdelay mode
@@ -156,5 +157,6 @@ class Console:
                 break
         self.wnd_status.erase()
         self.wnd_status.refresh()
+        curses.curs_set(self.cursor_visible)
         curses.halfdelay(5)
         return status
