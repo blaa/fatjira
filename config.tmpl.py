@@ -9,6 +9,8 @@ JIRA = {
     'crt': None,
 }
 
+EDITOR = "vim {}"
+
 ISSUES = {
     # Applied during sync. Changing might require a full resync.
     'issue_filter': 'project in (...)',

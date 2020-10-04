@@ -34,7 +34,7 @@ class DashboardView(CommonView):
     def action_update(self):
         # TODO: Parallel
         self.update_in_progress = True
-        self.app.display.redraw_view()
+        self.app.display.redraw()
         self.app.issue_cache.update()
         self.update_in_progress = False
         self.app.issue_cache.update()

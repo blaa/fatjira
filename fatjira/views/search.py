@@ -118,11 +118,11 @@ class SearchView(View):
 
     def action_next(self):
         self.selected_idx += 1
-        self.app.display.redraw_view()
+        self.app.display.redraw()
 
     def action_prev(self):
         self.selected_idx -= 1
-        self.app.display.redraw_view()
+        self.app.display.redraw()
 
     def keypress(self, key):
         # TODO: Move to shared editor
@@ -141,4 +141,4 @@ class SearchView(View):
         else:
             self.app.debug.log(f"Unhandled key: {key}")
 
-        self.app.display.redraw_view()
+        self.app.display.redraw()

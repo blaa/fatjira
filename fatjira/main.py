@@ -1,7 +1,8 @@
 import os
 import logging
 import argparse
-from yacui import App, Renderer
+from yacui import App
+from yacui import Renderer, ExtEditor
 from fatjira.views import DashboardView, SearchView
 from fatjira import ServiceJira
 from fatjira import FatjiraTheme
@@ -69,10 +70,13 @@ def main():
     app.config = config
     app.jira = jira_service
 
-    # Template renderer
+    # Instantiate template renderer
     here = os.path.dirname(os.path.realpath(__file__))
     template_path = os.path.join(here, "templates")
     app.renderer = Renderer(template_path)
+
+    # Instantiate external editor, reuse template_path
+    app.exteditor = ExtEditor(app, config.EDITOR, template_path)
 
     if args.update:
         if args.offline:
