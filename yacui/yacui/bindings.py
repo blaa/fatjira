@@ -9,10 +9,10 @@ Binding = namedtuple('Binding', ['keys', 'desc', 'action'])
 
 class _State:
     def __init__(self):
-        # {'k': action_to_call(), "C-F": action(), ...} - for lookup
-        self.keymap = {}
         # [ binding1, binding2 ] - for display, in order.
         self.commands = []
+        # {'k': binding, "C-F": binding2, ...} - for lookup
+        self.keymap = {}
         # ["Type to search", "See manual page 34", ...]
         self.hints = []
         # Registered / reserved, but disabled; ({"key", "key2", ...})
@@ -25,7 +25,7 @@ class _State:
         for key in binding.keys:
             if key in self.keymap:
                 raise Exception(f"Key {key} already is defined")
-            self.keymap[key] = binding.action
+            self.keymap[key] = binding
             if binding.action is None:
                 # Probably a placeholder.
                 self.disable(binding.keys)
@@ -42,7 +42,7 @@ class _State:
     def enable(self, keys):
         "Enable keys"
         if not isinstance(keys, list):
-           keys = [keys]
+            keys = [keys]
         for key in keys:
             assert key in self.keymap
             if key in self.disabled:
@@ -51,7 +51,7 @@ class _State:
     def disable(self, keys):
         "Disable keys"
         if not isinstance(keys, list):
-           keys = [keys]
+            keys = [keys]
         for key in keys:
             assert key in self.keymap
             self.disabled.add(key)
@@ -64,13 +64,14 @@ class _State:
           True: If action was called or would be called if was enabled (consume key)
           False: key not bound to any action.
         """
-        if key in self.disabled:
-            # No action is called, but the key is "consumed" and not sent into the view.
-            return True
-        action = self.keymap.get(key)
-        if action is None:
+        binding = self.keymap.get(key)
+        if binding is None:
             return False
-        action()
+        for key in binding.keys:
+            if key in self.disabled:
+                # No action is called, but the key is "consumed" and not sent into the view.
+                return True
+        binding.action()
         return True
 
 
@@ -103,7 +104,7 @@ class Bindings:
           entries: [ binding1, binding2, ... ]
         """
         if push is True:
-           self.push()
+            self.push()
 
         for binding in entries:
             assert isinstance(binding, Binding)
