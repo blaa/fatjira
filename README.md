@@ -10,18 +10,29 @@ This is a fat Jira client inspired by:
 - How switching to a browser to find an issue can be distracting and time
   consuming (and how a simple CLI is still insufficient).
 
-If you've never used incremental search, for eg. in Emacs with Helm/Ivy to
-search through commands, buffers, file names, file contents (ripgrep) you might
-not appreciate fatjira.
+If you've never used incremental search, for eg. `fzf` or Emacs with Helm/Ivy to
+search through commands, buffers, file names, file contents you might not
+appreciate fatjira.
 
 I want to find and alter the issue as fast and effortlessly as I can commit
 code, move the commit to a feature branch (because I forgot earlier), amend it
 (cause I forgot to include a changelog) and push it in Magit.
 
-TODO: ttygif with censored issues.
+![terminal demo](gfx/example.svg)
+
+Recording of an example session using a fake 10000 entries based on europarl
+parallel corpus dataset. Some searching and adding a simulated worklog. Video is
+a bit laggy compared to real app on my computer. Neither termtosvg nor ttyrec
+seemed to follow the high refresh rate of the app.
 
 State and benchmarks
 --------------------
+
+Works:
+- Issue synchronisation,
+- basic (but fast) search,
+- viewing issue details and recent worklogs,
+- adding worklogs.
 
 Work in progress. :P And I probably won't be able to push it to be useful by
 myself (time :/), but maybe showcasing the concept will inspire someone? Pretty
@@ -43,4 +54,11 @@ I considered combining it with orgassist project as it scratches a similar itch.
 Usage
 -----
 
-Currently from the GIT, no install over PIP available
+Currently from the GIT, no install over PIP is available.
+
+    pipenv install
+    pipenv shell
+    cp config.tmpl.py config.py
+    vim config.py # Set server data
+    ./fj --update
+    ./fj # try with --offline.
